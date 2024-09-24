@@ -4,11 +4,12 @@ export class FAQ extends Scene {
     player: Phaser.Physics.Arcade.Sprite;
     platforms: Phaser.Physics.Arcade.StaticGroup;
     cursors: Phaser.Types.Input.Keyboard.CursorKeys;
-    faqBoxes: Phaser.Physics.Arcade.StaticGroup;
+    box: Phaser.Physics.Arcade.StaticGroup;
     stones: Phaser.Physics.Arcade.StaticGroup;
     clouds: GameObjects.Image[] = [];
     villains: Phaser.Physics.Arcade.Group;
     coins: Phaser.Physics.Arcade.Group;
+    boxes: Phaser.Physics.Arcade.StaticGroup;
     pipes: Phaser.Physics.Arcade.StaticGroup;
     scoreText: GameObjects.Text;
     score: number = 0;
@@ -146,78 +147,67 @@ export class FAQ extends Scene {
 
         this.input?.keyboard?.on("keydown-SPACE", () => {
             if (this.player.body && this.player.body.touching.down) {
-                this.player.setVelocityY(-500);
+                this.player.setVelocityY(-900);
+            }
+        });
+
+        this.input?.keyboard?.on("keydown-UP", () => {
+            if (this.player.body && this.player.body.touching.down) {
+                this.player.setVelocityY(-900);
             }
         });
 
         this.physics.add.collider(this.player, this.stones);
 
-        // Create FAQ boxes
-        this.faqBoxes = this.physics.add.staticGroup();
-        const faqBoxPositions = [
+        const platformPositions = [
             { x: width * 0.15, y: height * 0.3 },
             { x: width * 0.4, y: height * 0.35 },
             { x: width * 0.66, y: height * 0.45 },
             { x: width * 0.9, y: height * 0.3 },
         ];
 
-        this.faqBoxes = this.physics.add.staticGroup();
-        faqBoxPositions.forEach((pos) => {
-            this.faqBoxes
-                .create(pos.x, pos.y, "faqBox")
-                .setScale(0.25)
-                .refreshBody();
-        });
-
-        // Add collision between player and FAQ boxes
-        this.physics.add.collider(
-            this.player,
-            this.faqBoxes,
-            this
-                .displayFAQ as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
-            undefined,
-            this
-        );
-
-        // Create platforms, villains, pipes, and coins
-        this.platforms = this.physics.add.staticGroup();
-        this.villains = this.physics.add.group();
-        this.coins = this.physics.add.group();
-        this.pipes = this.physics.add.staticGroup();
-
-        const platformPositions = [
-            { x: width * 0.2, y: height * 0.4 },
-            { x: width * 0.8, y: height * 0.6 },
-            { x: width * 0.3, y: height * 0.7 },
-            { x: width * 0.7, y: height * 0.2 },
-        ];
-
         platformPositions.forEach((pos, index) => {
             this.platforms
-                .create(pos.x - 96, pos.y, "stone")
-                .setScale(1)
+                .create(pos.x - 84, pos.y, "stone")
+                .setScale(0.80)
                 .refreshBody();
-            const box = this.faqBoxes
-                .create(pos.x, pos.y, "faqBox")
-                .setScale(0.25)
+            const box = this.boxes
+                .create(pos.x, pos.y, "box")
+                .setScale(0.2)
                 .refreshBody();
             this.platforms
-                .create(pos.x + 96, pos.y, "stone")
-                .setScale(1)
+                .create(pos.x + 84, pos.y, "stone")
+                .setScale(0.80)
                 .refreshBody();
 
-            // Add coins on top of each box
             const coin = this.coins.create(pos.x, pos.y - 90, "coin");
-            coin.anims.play("spin", true);
             coin.setScale(2);
             coin.setCollideWorldBounds(true);
             this.physics.add.collider(coin, box);
-            this.physics.add.collider(coin, this.platforms);
-            this.physics.add.overlap(
+            coin.anims.play("spin", true);
+            this.physics.add.overlap(this.player, coin, this.collectCoin as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback, undefined, this);
+            
+            // Add villains to platforms 2 and 4
+            if (index === 1 || index === 3) {
+                const villain = this.villains.create(
+                    pos.x,
+                    pos.y - 90,
+                    "villain"
+                );
+                villain.setScale(0.5);
+                villain.setCollideWorldBounds(true);
+                villain.body.setVelocityX(50);
+                villain.body.setBounce(1, 0);
+                this.physics.add.collider(villain, box);
+                this.physics.add.collider(villain, this.platforms);
+                this.physics.add.collider(villain, this.stones);
+            }
+
+            this.physics.add.collider(
                 this.player,
-                coin,
+                box,
                 this
-                    .collectCoin as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
+                    .displayFAQ as Phaser.Types.Physics.Arcade.ArcadePhysicsCallback,
                 undefined,
                 this
             );
@@ -242,11 +232,11 @@ export class FAQ extends Scene {
             // }
         });
 
-        const pipe = this.pipes
-            .create(width * 0.5, height * 0.65 - 75, "pipe")
-            .setScale(0.25);
+        // const pipe = this.pipes
+        //     .create(width * 0.5, height * 0.65 - 75, "pipe")
+        //     .setScale(0.25);
 
-        this.physics.add.collider(pipe, this.player);
+        // this.physics.add.collider(pipe, this.player);
 
         // Add a villain on the stones
         const stoneVillain = this.villains.create(

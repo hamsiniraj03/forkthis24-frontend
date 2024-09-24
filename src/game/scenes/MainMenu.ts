@@ -79,10 +79,8 @@ export class MainMenu extends Scene {
         this.stones = this.physics.add.staticGroup();
         this.stones
             .create(stonesImage.x, stonesImage.y, "stones")
-            .setScale(0.88)
+            .setScale(0.9)
             .refreshBody();
-
-        this.add.existing(stonesImage);
 
         const skyHeight = height / 4;
 
@@ -167,7 +165,7 @@ export class MainMenu extends Scene {
 
         this.input?.keyboard?.on("keydown-SPACE", () => {
             if (this.player.body && this.player.body.touching.down) {
-                this.player.setVelocityY(-330);
+                this.player.setVelocityY(-660);
             }
         });
 

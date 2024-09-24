@@ -78,7 +78,7 @@ export class Timeline extends Scene {
                     Phaser.Math.Between(0, skyHeight),
                     "cloud"
                 )
-                .setDepth(50);
+                .setDepth(-1);
             cloud.setScale(0.5);
             this.clouds.push(cloud);
             this.moveCloud(cloud);
@@ -137,12 +137,12 @@ export class Timeline extends Scene {
         this.cursors = this.input?.keyboard?.createCursorKeys()!;
 
         this.input?.keyboard?.on("keydown-LEFT", () => {
-            this.player.setVelocityX(-160);
+            this.player.setVelocityX(-280);
             this.player.anims.play("left", true);
         });
 
         this.input?.keyboard?.on("keydown-RIGHT", () => {
-            this.player.setVelocityX(160);
+            this.player.setVelocityX(280);
             this.player.anims.play("right", true);
         });
 
@@ -162,7 +162,13 @@ export class Timeline extends Scene {
 
         this.input?.keyboard?.on("keydown-SPACE", () => {
             if (this.player.body && this.player.body.touching.down) {
-                this.player.setVelocityY(-500);
+                this.player.setVelocityY(-900);
+            }
+        });
+
+        this.input?.keyboard?.on("keydown-UP", () => {
+            if (this.player.body && this.player.body.touching.down) {
+                this.player.setVelocityY(-900);
             }
         });
 
@@ -182,16 +188,16 @@ export class Timeline extends Scene {
 
         platformPositions.forEach((pos, index) => {
             this.platforms
-                .create(pos.x - 96, pos.y, "stone")
-                .setScale(1)
+                .create(pos.x - 84, pos.y, "stone")
+                .setScale(0.80)
                 .refreshBody();
             const box = this.boxes
                 .create(pos.x, pos.y, "box")
-                .setScale(0.25)
+                .setScale(0.2)
                 .refreshBody();
             this.platforms
-                .create(pos.x + 96, pos.y, "stone")
-                .setScale(1)
+                .create(pos.x + 84, pos.y, "stone")
+                .setScale(0.80)
                 .refreshBody();
 
             // Add collision detection for the box

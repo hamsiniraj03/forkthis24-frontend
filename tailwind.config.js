@@ -10,6 +10,9 @@ const config = {
         "jersey": ['"Jersey 20"', "monospace"],
         "roboto-slab": ['"Roboto Slab"', "monospace"],
         "roboto-mono": ['"Roboto Mono"', "monospace"],
+        "bungee": ['"Bungee"', "monospace"],
+        "cantora": ['"Cantora One"', "monospace"],
+        
       },
       colors: {
         background: "var(--background)",
